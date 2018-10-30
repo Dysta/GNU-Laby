@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -Wall -g -O0   CMakeFiles/laby.dir/src/laby.cpp.o CMakeFiles/laby.dir/src/map.cpp.o  -o laby 

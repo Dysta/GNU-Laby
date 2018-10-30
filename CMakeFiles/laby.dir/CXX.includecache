@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dysta/Documents/house/laby/inc/map.hpp
+fstream
+-
+iostream
+-
+iomanip
+-
+cstdlib
+-
+string
+-
+
+/home/dysta/Documents/house/laby/src/laby.cpp
+cstdlib
+-
+../inc/map.hpp
+/home/dysta/Documents/house/laby/inc/map.hpp
+
+/home/dysta/Documents/house/laby/src/map.cpp
+../inc/map.hpp
+/home/dysta/Documents/house/laby/inc/map.hpp
+

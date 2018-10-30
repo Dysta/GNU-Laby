@@ -1,0 +1,3 @@
+/home/dysta/Documents/house/laby/CMakeFiles/rebuild_cache.dir
+/home/dysta/Documents/house/laby/CMakeFiles/edit_cache.dir
+/home/dysta/Documents/house/laby/CMakeFiles/laby.dir
