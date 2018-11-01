@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include "../inc/map.hpp"
+#include "map.hpp"
 
 int main(int argc, char const *argv[]) {
     Map* m = new Map("maps/map01");
