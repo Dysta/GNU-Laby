@@ -15,11 +15,11 @@ else ()
 endif ()
 
 # Configure include directories -------------------------------
-INCLUDE_DIRECTORIES (inc)
+#INCLUDE_DIRECTORIES (inc)
 
 # Configure path ----------------------------------------------
 SET (SRCS_PATH "${PROJECT_SOURCE_DIR}/src/")
-SET (INCS_PATH "${PROJECT_SOURCE_DIR}/inc/")
+SET (INCS_PATH "${PROJECT_SOURCE_DIR}/src/")
 
 # Include file ------------------------------------------------
 FILE (GLOB DOTC ${SRCS_PATH}*.cpp)

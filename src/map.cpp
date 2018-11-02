@@ -1,14 +1,5 @@
 #include "map.hpp"
-
-Map::Map(void) {}
-
-Map::Map(int level, int size, int goalScore, int position) :
-    _level(level),
-    _size(size),
-    _position(position)
-{
-    this->_grid = new Map::u_case[_size * _size];
-}
+#include "utils.hpp"
 
 /*
 * This function load a labyMap from a file containing the information in successive lines.
@@ -26,11 +17,10 @@ Map::Map(int level, int size, int goalScore, int position) :
 * \return the adress of a labyMap allocated in the heap or NULL in case of error.
 *
 */
-Map::Map(const std::string filename) {
+void Map::loadMapFromFile(std::string const& filename) {
     std::ifstream file(filename.c_str());
     if ( file.fail() ) {
-        std::cerr << "Canno't open file : " << filename << std::endl;
-        return;
+        throw std::string("Canno't open file : " + filename);
     }
 
     // read the level
@@ -38,12 +28,18 @@ Map::Map(const std::string filename) {
 
     // read the width/height
     file >> this->_size;
+    if ( this->_size % 2 == 0 ) {
+        throw std::string(filename + " : invalide map size");
+    }
 
     // read the goal score
     file >> this->_goalScore;
 
     // read the start position
-    file >> this->_position; //FIXME: check if the start position is correct (on a integer not on a char)
+    file >> this->_position;
+    if ( this->_position % 2 == 1 ) {
+        throw std::string(filename + " : invalide start position");
+    }
     
     // allocating memory
     this->_grid = new Map::u_case[_size * _size];
@@ -55,10 +51,16 @@ Map::Map(const std::string filename) {
     }
 
     // read the opcode of the grid
+    char c;
     for ( int i = 1; i < this->_size * this->_size; i+=2) {
-        file >> this->_grid[i].opcode;
+        file >> c;
+        this->_grid[i].opcode = Utils::charToOperator(c);
     }
 
+    // init the starting score
+    this->_startingScore = this->_grid[this->_position].number;
+    
+    file.close();
 }
 
 /*
@@ -78,16 +80,16 @@ Map::Map(const std::string filename) {
 *
 */
 void Map::drawMap() {
-    std::cout << "Level " << this->_level << " : " << this->_score << " -> " << this->_goalScore << " : " << this->_score << std::endl;
-    for ( int i = 0, evenLine = true; i <= this->_size * this->_size; i++ ) {
+    std::cout << "Level " << this->_level << " : " << this->_startingScore << " -> " << this->_goalScore << " : " << this->getActualValue() << std::endl;
+    for ( int i = 0, evenLine = true; i < this->_size * this->_size; i++ ) {
         if ( evenLine ) {
             if ( i % 2 == 0 )
-                std::cout << this->_grid[i].number << ((int) this->_position == i ? "^" : " " ) << std::setw(4);
+                std::cout << this->_grid[i].number << ((int) this->_position == i ? "^" : " " ) << std::setw((this->_grid[i].number > 9) ? ((this->_grid[i].number > 99) ? 2 : 3) : 4);
             else
-                std::cout << this->_grid[i].opcode << std::setw(5);
+                std::cout << Utils::operatorToChar(this->_grid[i].opcode) << std::setw(5);
         } else {
             if ( i % 2 != 0 )
-                std::cout << this->_grid[i].opcode << std::setw(10);
+                std::cout << Utils::operatorToChar(this->_grid[i].opcode) << std::setw(10);
         }
 
         if ( (i + 1) % this->_size == 0 ) {
@@ -95,7 +97,58 @@ void Map::drawMap() {
             evenLine = !evenLine;
         }
     }
+}
 
+/*
+* This function returns the actual score of a labyMap.
+* 
+* \return the actual score corresponding to the content of the actual cell.
+*/
+int Map::getActualValue() {
+    return this->_grid[this->_position].number;
+}
+
+
+/*
+* This function returns the actual operand in a given direction of the actual position in a labyMap.
+* 
+* \param d a direction.
+* \return the operand in the direction d of the actual position.
+*/
+Map::e_operator Map::getOperator(e_direction dir) {
+    if ( dir == UP ) {
+        if ( this->_position < this->_size ) {
+            return OP_UNDEFINED;
+        } else {
+            return this->_grid[this->_position - this->_size].opcode;
+        }
+    }
+
+    if ( dir == DOWN ) {
+        if ( this->_position + this->_size >= this->_size * this->_size ) {
+            return OP_UNDEFINED;
+        } else {
+            return this->_grid[this->_position + this->_size].opcode;
+        }
+    }
+
+    if ( dir == LEFT ) {
+        if ( this->_position % this->_size == 0 ) {
+            return OP_UNDEFINED;
+        } else {
+            return this->_grid[this->_position - 1].opcode;
+        }
+    }
+
+    if ( dir == RIGHT ) {
+        if ( (this->_position + 1) % this->_size == 0 ) {
+            return OP_UNDEFINED;
+        } else {
+            return this->_grid[this->_position + 1].opcode;
+        }
+    }
+
+    return OP_UNDEFINED;
 }
 
 Map::~Map() {
