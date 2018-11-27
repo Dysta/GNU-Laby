@@ -31,21 +31,22 @@ class Map {
             e_operator opcode;
         } u_case;
 
-        //Map(const std::string filename) ;
+        Map(void);
+        Map(int level, int size, int goalScore, int startingScore, int position, u_case* grid);
         ~Map(void);
-        void loadMapFromFile(std::string const& file);
+        Map* loadMapFromFile(std::string const& file);
         void drawMap(void);
         int getActualValue(void);
         e_operator getOperator(e_direction dir);
-        bool applyOpreator(e_direction dir);
+        bool applyOperator(e_direction dir);
         e_direction* resolve(void);
 
-        int _position;
     private:
         int _level;
         int _size;
         int _goalScore;
         int _startingScore;
+        int _position;
         u_case* _grid;
     
 };

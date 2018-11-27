@@ -1,12 +1,23 @@
 #include "map.hpp"
 #include "utils.hpp"
 
+Map::Map() {
+
+}
+
+
+Map::Map(int level, int size, int goalScore, int startingScore, int position, Map::u_case* grid) :
+_level(level), _size(size), _goalScore(goalScore), _startingScore(startingScore), _position(position)
+{
+    this->_grid = grid;
+}
+
 /*
 * This function load a labyMap from a file containing the information in successive lines.
 * The 1st line contains the level name. 
 * The 2nd line contains the size of the map.
 * The 3rd line contains the goal score.
-* The 4th line conatins the start position.
+* The 4th line conatins the start position as a index position in the content (not coordinates).
 * The 5th line contains the content of the cells of the map from up left to down right as 
 * a list of integers separated by spaces.
 * The 6th line contains the content of the cells of the map from up left to down right as 
@@ -17,50 +28,52 @@
 * \return the adress of a labyMap allocated in the heap or NULL in case of error.
 *
 */
-void Map::loadMapFromFile(std::string const& filename) {
+Map* Map::loadMapFromFile(std::string const& filename) {
     std::ifstream file(filename.c_str());
     if ( file.fail() ) {
         throw std::string("Canno't open file : " + filename);
     }
+    int level, size, goalScore, startingScore, position;
+    Map::u_case* grid;
 
     // read the level
-    file >> this->_level;
+    file >> level;
 
     // read the width/height
-    file >> this->_size;
-    if ( this->_size % 2 == 0 ) {
+    file >> size;
+    if ( size % 2 == 0 ) {
         throw std::string(filename + " : invalide map size");
     }
 
     // read the goal score
-    file >> this->_goalScore;
+    file >> goalScore;
 
-    // read the start position
-    file >> this->_position;
-    if ( this->_position % 2 == 1 ) {
-        throw std::string(filename + " : invalide start position");
-    }
+    // read the start index
+    file >> position;
+    position *= 2;
     
     // allocating memory
-    this->_grid = new Map::u_case[_size * _size];
+    grid = new Map::u_case[size * size];
     // read the integer of the grid
-    for ( int i = 0; i < this->_size * this->_size; i+=2 ) {
-        if ( i != 0 && i % this->_size - 1 == 0 ) 
-            i+= this->_size - 1;
-        file >> this->_grid[i].number;
+    for ( int i = 0; i < size * size; i+=2 ) {
+        if ( i != 0 && i % size - 1 == 0 ) 
+            i+= size - 1;
+        file >> grid[i].number;
     }
 
     // read the opcode of the grid
     char c;
-    for ( int i = 1; i < this->_size * this->_size; i+=2) {
+    for ( int i = 1; i < size * size; i+=2) {
         file >> c;
-        this->_grid[i].opcode = Utils::charToOperator(c);
+        grid[i].opcode = Utils::charToOperator(c);
     }
 
     // init the starting score
-    this->_startingScore = this->_grid[this->_position].number;
-    
+    startingScore = grid[position].number;
+
     file.close();
+    
+    return new Map(level, size, goalScore, startingScore, position, grid);
 }
 
 /*
@@ -149,6 +162,22 @@ Map::e_operator Map::getOperator(e_direction dir) {
     }
 
     return OP_UNDEFINED;
+}
+
+/*
+* This function modifies a labyMap by applying the operand in the direction d of the actual position.
+* 
+* \param d a direction.
+* \return true if the operation was successfull; false otherwise.
+*/
+bool Map::applyOperator(Map::e_direction dir) {
+    e_operator ope = this->getOperator(dir);
+    if ( ope == OP_UNDEFINED ) return false;
+
+    if ( dir == UP ) {
+        this->_position += this->_size;
+        
+    }
 }
 
 Map::~Map() {
