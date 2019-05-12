@@ -29,7 +29,10 @@ _level(level), _size(size), _goalScore(goalScore), _startingScore(startingScore)
 *
 */
 Map* Map::loadMapFromFile(std::string const& filename) {
-    std::ifstream file(filename.c_str());
+    if (filename.empty())
+        throw std::string("filename is empty");
+
+    std::ifstream file(filename.c_str(), std::ios::in);
     if (file.fail()) {
         throw std::string("Canno't open file : " + filename);
     }
@@ -179,6 +182,27 @@ bool Map::applyOperator(Map::e_direction dir) {
         
     }
 }
+
+char Map::operatorToChar(Map::e_operator e) {
+    switch ( e ) {
+        case Map::PLUS: return '+';
+        case Map::MINUS: return '-';
+        case Map::DIVIDE: return '/';
+        case Map::MULTIPLY: return '*';
+        default: return '?';
+    }
+}
+
+Map::e_operator Map::charToOperator(char c) {
+    switch ( c ) {
+        case '+': return Map::PLUS;
+        case '-': return Map::MINUS;
+        case '/': return Map::DIVIDE;
+        case '*': return Map::MULTIPLY;
+        default: return Map::OP_UNDEFINED;
+    }
+}
+
 
 Map::~Map() {
     delete _grid;
