@@ -34,12 +34,18 @@ class Map {
         Map(void);
         Map(int level, int size, int goalScore, int startingScore, int position, u_case* grid);
         ~Map(void);
-        Map* loadMapFromFile(std::string const& file);
+        static Map* loadMapFromFile(std::string const& file);
         void drawMap(void);
         int getActualValue(void);
         e_operator getOperator(e_direction dir);
         bool applyOperator(e_direction dir);
         e_direction* resolve(void);
+
+        int getLevel() { return _level; }
+        int getSize() { return _size; }
+        int getGoalScore() { return _goalScore; }
+        int getStartingScore() { return _goalScore; }
+        int getPosition() { return _position; }
 
     private:
         int _level;

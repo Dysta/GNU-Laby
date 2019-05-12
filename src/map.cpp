@@ -7,21 +7,21 @@ Map::Map() {
 
 
 Map::Map(int level, int size, int goalScore, int startingScore, int position, Map::u_case* grid) :
-_level(level), _size(size), _goalScore(goalScore), _startingScore(startingScore), _position(position)
+_level(level), _size(size), _goalScore(goalScore), _startingScore(startingScore), _position(position), _grid(grid)
 {
-    this->_grid = grid;
+
 }
 
 /*
 * This function load a labyMap from a file containing the information in successive lines.
 * The 1st line contains the level name. 
 * The 2nd line contains the size of the map.
-* The 3rd line contains the goal score.
-* The 4th line conatins the start position as a index position in the content (not coordinates).
-* The 5th line contains the content of the cells of the map from up left to down right as 
+* The 3th line contains the content of the cells of the map from up left to down right as
 * a list of integers separated by spaces.
-* The 6th line contains the content of the cells of the map from up left to down right as 
+* The 4th line contains the content of the cells of the map from up left to down right as
 * a list of characters.
+* The 5th line contains the start position as a index position in the content (not coordinates).
+* The 6rd line contains the goal score.
 * Note that the starting position also defines the starting score.
 * 
 * \param filename a File to read informations from.
@@ -30,7 +30,7 @@ _level(level), _size(size), _goalScore(goalScore), _startingScore(startingScore)
 */
 Map* Map::loadMapFromFile(std::string const& filename) {
     std::ifstream file(filename.c_str());
-    if ( file.fail() ) {
+    if (file.fail()) {
         throw std::string("Canno't open file : " + filename);
     }
     int level, size, goalScore, startingScore, position;
@@ -45,18 +45,11 @@ Map* Map::loadMapFromFile(std::string const& filename) {
         throw std::string(filename + " : invalide map size");
     }
 
-    // read the goal score
-    file >> goalScore;
-
-    // read the start index
-    file >> position;
-    position *= 2;
-    
     // allocating memory
     grid = new Map::u_case[size * size];
     // read the integer of the grid
     for ( int i = 0; i < size * size; i+=2 ) {
-        if ( i != 0 && i % size - 1 == 0 ) 
+        if ( i != 0 && i % size - 1 == 0 )
             i+= size - 1;
         file >> grid[i].number;
     }
@@ -67,6 +60,13 @@ Map* Map::loadMapFromFile(std::string const& filename) {
         file >> c;
         grid[i].opcode = Utils::charToOperator(c);
     }
+
+    // read the start index
+    file >> position;
+    position *= 2;
+
+    // read the goal score
+    file >> goalScore;
 
     // init the starting score
     startingScore = grid[position].number;
@@ -97,7 +97,7 @@ void Map::drawMap() {
     for ( int i = 0, evenLine = true; i < this->_size * this->_size; i++ ) {
         if ( evenLine ) {
             if ( i % 2 == 0 )
-                std::cout << this->_grid[i].number << ((int) this->_position == i ? "^" : " " ) << std::setw((this->_grid[i].number > 9) ? ((this->_grid[i].number > 99) ? 2 : 3) : 4);
+                std::cout << this->_grid[i].number << (this->_position == i ? "^" : " " ) << std::setw((this->_grid[i].number > 9) ? ((this->_grid[i].number > 99) ? 2 : 3) : 4);
             else
                 std::cout << Utils::operatorToChar(this->_grid[i].opcode) << std::setw(5);
         } else {
@@ -183,3 +183,4 @@ bool Map::applyOperator(Map::e_direction dir) {
 Map::~Map() {
     delete _grid;
 }
+
