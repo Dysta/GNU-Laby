@@ -1,5 +1,4 @@
 #include "map.hpp"
-#include "utils.hpp"
 
 Map::Map() {
 
@@ -61,7 +60,7 @@ Map* Map::loadMapFromFile(std::string const& filename) {
     char c;
     for ( int i = 1; i < size * size; i+=2) {
         file >> c;
-        grid[i].opcode = Utils::charToOperator(c);
+        grid[i].opcode = Map::charToOperator(c);
     }
 
     // read the start index
@@ -102,10 +101,10 @@ void Map::drawMap() {
             if ( i % 2 == 0 )
                 std::cout << this->_grid[i].number << (this->_position == i ? "^" : " " ) << std::setw((this->_grid[i].number > 9) ? ((this->_grid[i].number > 99) ? 2 : 3) : 4);
             else
-                std::cout << Utils::operatorToChar(this->_grid[i].opcode) << std::setw(5);
+                std::cout << Map::operatorToChar(this->_grid[i].opcode) << std::setw(5);
         } else {
             if ( i % 2 != 0 )
-                std::cout << Utils::operatorToChar(this->_grid[i].opcode) << std::setw(10);
+                std::cout << Map::operatorToChar(this->_grid[i].opcode) << std::setw(10);
         }
 
         if ( (i + 1) % this->_size == 0 ) {

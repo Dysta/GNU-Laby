@@ -1,12 +1,11 @@
 #include <cstdlib>
 
 #include "map.hpp"
-#include "utils.hpp"
 
 int main(int argc, char *argv[]) {
     std::ignore = argc;
     std::ignore = argv;
-    Map* m = new Map;
+    Map* m;
     try {
         m = Map::loadMapFromFile("../laby/maps/map01.txt");
     } catch(std::string const& e) {
